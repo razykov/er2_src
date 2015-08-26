@@ -68,4 +68,17 @@ extern int set_rrot_state(void);
  */
 extern int set_lrot_state(void);
 
+/**
+ @brief
+ @en Set the speed of rotation foreach wheel to value.
+ @ru Устанавливает скорость вращения всех колес в указанное значение.
+ @return
+ @en Code of error. 0 if no erros.
+ @ru Код ошибки. 0 если ошибок нет.
+ @param value
+ @en Set to speed. Accepts values from 0 to 100, in the case of incorrectly arguments to stop the movement.
+ @ru Устанавливаемое значение скорости вращения. Принимает значения от 0 до 100, в случае некоректных аргументов останавливает движение.
+ */
+extern int set_wheels_velocity(int value);
+
 #endif /* WHEELS_H */

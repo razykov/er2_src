@@ -10,3 +10,5 @@ set(HEADERS wheels.h)
 set(SOURCES test.c wheels.c)
 
 add_executable(${PROJECT} ${HEADERS} ${SOURCES})
+target_link_libraries(${PROJECT} wiringPi)
+target_link_libraries(${PROJECT} pthread)
