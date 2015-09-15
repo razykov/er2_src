@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 set (PROJECT "test")
+set (PROJECT_LIB "wheels")
 
 project(${PROJECT})
 
@@ -8,7 +9,10 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 
 set(HEADERS wheels.h)
 set(SOURCES test.c wheels.c)
+set(SOURCES_LIB test.c wheels.c)
 
 add_executable(${PROJECT} ${HEADERS} ${SOURCES})
+add_library (${PROJECT_LIB} SHARED ${HEADERS} ${SOURCES_LIB})
+
 target_link_libraries(${PROJECT} wiringPi)
 target_link_libraries(${PROJECT} pthread)

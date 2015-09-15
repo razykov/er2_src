@@ -119,13 +119,10 @@ static int inline change_state(enum states s, enum states cs, enum compls t) {
     printf("change_state: state=%d, s=%d,cs=%d, t=%d\n", state, s, cs, t);
 #endif
     
-    if(set_wheels_velocity(0) != 0)
+    if(!set_wheels_velocity(0))
         return ERROR_STOPED_ALL_WHEELS;
     
     if(state != s) {
-                
-        if(set_velocity_zero() != 0)
-            return ERROR_STOPED_ALL_WHEELS;
                       
         if(state == cs) {
             if(state == FORTH || state == BACK)
@@ -258,7 +255,7 @@ int set_wheels_velocity(int new_value) {
 
 int set_stop_state(void) {
     
-    if(set_wheels_velocity(0) != 0)
+    if(!set_wheels_velocity(0))
         return ERROR_STOPED_ALL_WHEELS;
     
     int i;
