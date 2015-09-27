@@ -23,21 +23,23 @@ int main() {
     set_stop_state();
     */
     
-    //forth_rotate_forth
+    
+    struct wheels_speed new_val = {60, 60, 60, 60};
+    
     set_forth_state();
-    set_wheels_velocity(60);
+    set_wheels_speed(&new_val);
     usleep(1.5 * 1000000);
     
     set_rrot_state();
-    set_wheels_velocity(80);
+    set_wheels_speed(&new_val);
     usleep(1.5 * 1000000);
     
     set_forth_state();
-    set_wheels_velocity(60);
+    set_wheels_speed(&new_val);
     usleep(1.5 * 1000000);
     
     set_lrot_state();
-    set_wheels_velocity(80);
+    set_wheels_speed(&new_val);
     usleep(1.5 * 1000000);
     
     set_stop_state();
