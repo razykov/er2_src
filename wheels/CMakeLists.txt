@@ -25,16 +25,15 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 endif(__CROSSC__)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g")
 
-set(HEADERS wheels.h)
-set(SOURCES test.c wheels.c)
-set(SOURCES_LIB test.c wheels.c)
-
-add_executable(${PROJECT} ${HEADERS} ${SOURCES})
-target_link_libraries(${PROJECT} wiringPi)
-target_link_libraries(${PROJECT} pthread)
+set(HEADERS wheels.h er_errors.h)
+set(SOURCES test.c)
+set(SOURCES_LIB wheels.c )
 
 add_library (${PROJECT_LIB} SHARED ${HEADERS} ${SOURCES_LIB})
 target_link_libraries(${PROJECT_LIB} wiringPi)
 target_link_libraries(${PROJECT_LIB} pthread)
+
+add_executable(${PROJECT} ${HEADERS} ${SOURCES})
+target_link_libraries(${PROJECT} ${PROJECT_LIB} )

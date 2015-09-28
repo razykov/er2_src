@@ -8,6 +8,7 @@
 #include <unistd.h> //
 #include "wheels.h"
 #include "er_errors.h"
+#include "diagnostics.h"
 
 
 #define BCM2708_PERI_BASE       0x20000000
@@ -54,7 +55,7 @@
 #define PWM_LF_GPIO_PIN     5
 #define PWM_RF_GPIO_PIN     6
 
-enum states {FORTH, BACK, RROT, LROT, STOP} state;
+static enum states {FORTH, BACK, RROT, LROT, STOP} wls_state;
 enum compls {LW = 0, HI = 1};
 
 static volatile uint32_t *gpio;
@@ -101,37 +102,38 @@ static uint8_t gpioToShift [] = {
 const struct wheels_speed zero_speed = {0.0, 0.0, 0.0, 0.0};
 
 
-int set_move_state ( void );
-int set_rotate_state ( void );
+static int set_move_state ( void );
+static int set_rotate_state ( void );
 
 
 static void inline reg_clk ( void ) {
     SET_HIG ( CLK_GPIO_PIN );
-    usleep ( 1 );
+    usleep ( TIME_NS_SGER_CLICK );
     SET_LOW ( CLK_GPIO_PIN );
-    usleep ( 1 );
+    usleep ( TIME_NS_SGER_CLICK );
 }
 
 static void inline reg_rclk ( void ) {
     SET_HIG ( RCLK_GPIO_PIN );
-    usleep ( 1 );
+    usleep ( TIME_NS_SGER_CLICK );
     SET_LOW ( RCLK_GPIO_PIN );
-    usleep ( 1 );
+    usleep ( TIME_NS_SGER_CLICK );
 }
 
 static int inline change_state ( enum states s, enum states cs, enum compls t ) {
 
 #ifndef NDEBUG
-    printf ( "change_state: state=%d, s=%d,cs=%d, t=%d\n", state, s, cs, t );
+    //systime();
+    printf ( "change_state: state=%d, s=%d,cs=%d, t=%d\n", wls_state, s, cs, t );
 #endif
 
     if ( !set_wheels_speed ( &zero_speed ) )
         return ERROR_STOPED_ALL_WHEELS;
 
-    if ( state != s ) {
+    if ( wls_state != s ) {
 
-        if ( state == cs ) {
-            if ( state == FORTH || state == BACK )
+        if ( wls_state == cs ) {
+            if ( wls_state == FORTH || wls_state == BACK )
                 COMPL_SWITCH_MOVE ( t );
             else
                 COMPL_SWITCH_ROTATE ( t );
@@ -160,7 +162,7 @@ static int inline change_state ( enum states s, enum states cs, enum compls t ) 
             }
 
         reg_rclk();
-        state = s;
+        wls_state = s;
     }
 
     return 0;
@@ -193,16 +195,17 @@ int init_wheels ( void ) {
     softPwmCreate ( PWM_LF_GPIO_PIN, 0, 100 );
     softPwmCreate ( PWM_RF_GPIO_PIN, 0, 100 );
 
-    state = STOP;
+    wls_state = STOP;
 
 #ifndef NDEBUG
+    //systime();
     printf ( "wheels initiazed\n" );
 #endif
 
     return 0;
 }
 
-int set_move_state ( void ) {
+static int set_move_state ( void ) {
 
     int i;
     for ( i = 0; i < NUMBER_WHEELS; ++i ) {
@@ -213,13 +216,14 @@ int set_move_state ( void ) {
     }
 
 #ifndef NDEBUG
+    //systime();
     printf ( "set_move_state\n" );
 #endif
 
     return 0;
 }
 
-int set_rotate_state ( void ) {
+static int set_rotate_state ( void ) {
 
     int rotate_state[] = {ROTATE_STATE_ARRAY};
     int gpio_shift[] = {GPIOTOGPCLR, GPIOTOGPSET};
@@ -233,6 +237,7 @@ int set_rotate_state ( void ) {
     reg_rclk();
 
 #ifndef NDEBUG
+    //systime();
     printf ( "set_rotate_state\n" );
 #endif
 
@@ -308,6 +313,7 @@ int set_wheels_speed ( const struct wheels_speed* const new_val ) {
     write_pwm_value ( &curr_val );
 
 #ifndef NDEBUG
+    //systime();
     printf ( "lb:%d;\trb:%d;\tlf:%d;\trf:%d;\n",
              ( int ) curr_val.lb,
              ( int ) curr_val.rb,
@@ -339,7 +345,7 @@ int set_stop_state ( void ) {
         reg_clk();
     reg_rclk();
 
-    state = STOP;
+    wls_state = STOP;
 
     return 0;
 }

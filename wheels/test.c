@@ -3,9 +3,11 @@
 #include <unistd.h>
 #include <time.h>
 #include "wheels.h"
+#include "diagnostics.h"
 
 int main() {
     
+    //init_diagnostics();;
     init_wheels();
     
     //forth_back
@@ -24,7 +26,7 @@ int main() {
     */
     
     
-    struct wheels_speed new_val = {60, 60, 60, 60};
+    struct wheels_speed new_val = {30, 30, 30, 30};
     
     set_forth_state();
     set_wheels_speed(&new_val);
