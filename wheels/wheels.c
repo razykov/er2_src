@@ -227,7 +227,7 @@ static int set_rotate_state ( void ) {
 
     int rotate_state[] = {ROTATE_STATE_ARRAY};
     int gpio_shift[] = {GPIOTOGPCLR, GPIOTOGPSET};
-
+    
     int i;
     for ( i = 0; i < NUMBER_MOTOR_PINS; ++i ) {
         * ( gpio + gpio_shift[rotate_state[i]] ) = 1 << ( SIG_GPIO_PIN  & 0x1F );
