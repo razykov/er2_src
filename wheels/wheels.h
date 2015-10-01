@@ -2,7 +2,7 @@
  @file
  @brief
  @en Methods for wheels control.
- @ru Методы для управления шасси.
+ @ru Методы для управления колесами шасси.
  */
 
 #ifndef WHEELS_H
@@ -102,7 +102,7 @@ extern int set_lrot_state(void);
  @ru Код ошибки. 0 если ошибок нет.
  @param new_value
  @en Set to speed. Accepts values from 0 to 100, in the case of incorrectly arguments to stop the movement.
- @ru Устанавливаемое значение скорости вращения. Принимает значения от 0 до 100, в случае некоректных аргументов останавливает движение.
+ @ru Устанавливаемое значение скорости вращения. Принимает значения от 0 до 100, в случае некорректных аргументов останавливает движение.
  */
 extern int set_all_wheels_speed (float new_value);
 
