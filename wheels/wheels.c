@@ -124,7 +124,7 @@ static int inline change_state ( enum states s, enum states cs, enum compls t ) 
 
 #ifndef NDEBUG
     //systime();
-    printf ( "change_state: state=%d, s=%d,cs=%d, t=%d\n", wls_state, s, cs, t );
+    //printf ( "change_state: state=%d, s=%d,cs=%d, t=%d\n", wls_state, s, cs, t );
 #endif
 
     if ( !set_wheels_speed ( &zero_speed ) )
@@ -227,7 +227,7 @@ static int set_rotate_state ( void ) {
 
     int rotate_state[] = {ROTATE_STATE_ARRAY};
     int gpio_shift[] = {GPIOTOGPCLR, GPIOTOGPSET};
-    
+
     int i;
     for ( i = 0; i < NUMBER_MOTOR_PINS; ++i ) {
         * ( gpio + gpio_shift[rotate_state[i]] ) = 1 << ( SIG_GPIO_PIN  & 0x1F );
@@ -244,7 +244,7 @@ static int set_rotate_state ( void ) {
     return 0;
 }
 
-void write_pwm_value ( const struct wheels_speed* const curr_val ) {
+static void write_pwm_value ( const struct wheels_speed* const curr_val ) {
     softPwmWrite ( PWM_LB_GPIO_PIN, ( int ) curr_val->lb );
     softPwmWrite ( PWM_RB_GPIO_PIN, ( int ) curr_val->rb );
     softPwmWrite ( PWM_LF_GPIO_PIN, ( int ) curr_val->lf );
@@ -272,7 +272,7 @@ int set_wheels_speed ( const struct wheels_speed* const new_val ) {
             int i;
             for ( i = 0; i < sizeof ( change_val ) / sizeof ( float ); ++i )
                 change_val[i] = 0.0;
-            
+
             response = ERROR_INCORRECT_VALUES;
         }
 
@@ -336,34 +336,72 @@ int set_all_wheels_speed ( float new_value ) {
 
 int set_stop_state ( void ) {
 
-    if ( !set_wheels_speed ( &zero_speed ) )
-        return ERROR_STOPED_ALL_WHEELS;
+    if(wls_state != STOP) {
+        if ( !set_wheels_speed ( &zero_speed ) )
+            return ERROR_STOPED_ALL_WHEELS;
 
-    int i;
-    SET_LOW ( SIG_GPIO_PIN );
-    for ( i = 0; i < NUMBER_MOTOR_PINS; ++i )
-        reg_clk();
-    reg_rclk();
+        int i;
+        SET_LOW ( SIG_GPIO_PIN );
+        for ( i = 0; i < NUMBER_MOTOR_PINS; ++i )
+            reg_clk();
+        reg_rclk();
 
-    wls_state = STOP;
+        wls_state = STOP;
+
+#ifndef NDEBUG
+        printf("set_stop_state\n");
+#endif
+    }
 
     return 0;
 }
 
 int set_forth_state ( void ) {
-    return change_state ( FORTH, BACK, LW );
+
+    if (wls_state != FORTH) {
+#ifndef NDEBUG
+        printf("set_forth_state\n");
+#endif
+        return change_state ( FORTH, BACK, LW );
+    }
+    else
+        return 0;
 }
 
 int set_back_state ( void ) {
-    return change_state ( BACK, FORTH, HI );
+
+    if (wls_state != BACK) {
+#ifndef NDEBUG
+        printf("set_back_state\n");
+#endif
+        return change_state ( BACK, FORTH, HI );
+    }
+    else
+        return 0;
 }
 
 int set_rrot_state ( void ) {
-    return change_state ( RROT, LROT, LW );
+
+    if (wls_state != RROT) {
+#ifndef NDEBUG
+        printf("set_rrot_state\n");
+#endif
+        return change_state ( RROT, LROT, LW );
+    }
+    else
+        return 0;
 }
 
 int set_lrot_state ( void ) {
-    return change_state ( LROT, RROT, HI );
+
+    if(wls_state != LROT) {
+#ifndef NDEBUG
+        printf("set_lrot_state\n");
+#endif
+        return change_state ( LROT, RROT, HI );
+    }
+    else
+        return 0;
 }
 
 
