@@ -6,6 +6,10 @@ set (MCONTROL_LIB "mcontrol")
 
 project(${PROJECT})
 
+set(INSTALL_PATH /usr/bin/)
+set(LIB_INSTALL_PATH /usr/lib/)
+set(HEADERS_INSTALL_PATH /usr/include)
+
 option(CrossC "CrossC")
 
 if(CrossC)
@@ -26,10 +30,11 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 endif(CrossC)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -O2 -g")
 
 set(HEADERS wheels.h er_errors.h)
 set(HEADERS_MCONTROL machine_control.h)
+set(HEADERS_INSTALL wheels.h machine_control.h)
 
 set(SOURCES test.c)
 set(SOURCES_WHEELS_LIB wheels.c )
@@ -44,3 +49,8 @@ target_link_libraries(${MCONTROL_LIB} ${WHEELS_LIB})
 
 add_executable (${PROJECT} ${HEADERS} ${SOURCES})
 target_link_libraries(${PROJECT} ${WHEELS_LIB} ${MCONTROL_LIB})
+
+
+install(TARGETS ${WHEELS_LIB} DESTINATION ${LIB_INSTALL_PATH})
+install(TARGETS ${MCONTROL_LIB} DESTINATION ${LIB_INSTALL_PATH})
+install(FILES ${HEADERS_INSTALL} DESTINATION ${HEADERS_INSTALL_PATH})
