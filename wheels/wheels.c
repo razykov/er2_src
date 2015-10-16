@@ -276,7 +276,7 @@ int set_wheels_speed ( const struct wheels_speed* const new_val ) {
             response = ERROR_INCORRECT_VALUES;
         }
 
-    int i,j;
+    int i;
 
     // Сalculation maximal change of speed
     float max_change = 0;
@@ -295,9 +295,15 @@ int set_wheels_speed ( const struct wheels_speed* const new_val ) {
     for ( i = 0; i < nof_steps; ++i ) {
 
         // Change of current pwm value
+        /*
         pf_c = ( float* ) &curr_val, j = 0;
         while ( pf_c != ( float* ) &curr_val + sizeof ( curr_val ) )
             *pf_c++ += step_val[j++];
+	*/
+	curr_val.lb = step_val[0];
+	curr_val.rb = step_val[1];
+	curr_val.lf = step_val[2];
+	curr_val.rf = step_val[3];
 
         write_pwm_value ( &curr_val );
 
