@@ -19,7 +19,7 @@ enum speed_direct {UP, DW};
  @en Code of error. 0 if no erros.
  @ru Код ошибки. 0 если ошибок нет.
  */
-extern int stop ();
+extern int stop ( void );
 
 /**
  @brief

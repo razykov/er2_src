@@ -1,11 +1,12 @@
 
 #include <stdio.h>
-//#include <stdlib.h>
 #include <math.h>
 #include "wheels.h"
 #include "machine_control.h"
 
-static int change_wheels_speed ( double y, double s );
+static int change_wheels_speed ();
+static double __step_yaw ( enum yaw_direct drct );
+static double __step_speed ( enum speed_direct drct );
 
 
 #define YAW_STEP	        0.1
@@ -21,14 +22,19 @@ static int change_wheels_speed ( double y, double s );
 #define INCORRECT               SPEED_UP_BOUND + YAW_UP_BOUND
 
 
+static double yaw = ZERO_YAW;
+static double speed = ZERO_SPEED;
 
-int stop() {
-    return change_wheels_speed ( ZERO_YAW, ZERO_SPEED );
+
+int stop( void ) {
+    yaw = ZERO_YAW;
+    speed = ZERO_SPEED;
+    return change_wheels_speed ();
 }
 
 static double __step_yaw ( enum yaw_direct drct ) {
 
-    static double yaw = 0.0;
+    //static double yaw = ZERO_YAW;
 
     switch ( drct ) {
     case RGH:
@@ -44,17 +50,17 @@ static double __step_yaw ( enum yaw_direct drct ) {
 
 static double __step_speed ( enum speed_direct drct ) {
 
-    static double speed = ZERO_SPEED;
+    //static double speed = ZERO_SPEED;
 
     switch ( drct ) {
     case UP:
-        if ( speed == - SPEED_BOTTOM_BOUND ) {
-            speed = ZERO_SPEED;
-        } else if ( speed == ZERO_SPEED ) {
-            speed = SPEED_BOTTOM_BOUND;
-        } else if ( speed < SPEED_UP_BOUND ) {
-            speed += SPEED_STEP;
-        }
+            if ( speed == - SPEED_BOTTOM_BOUND ) {
+                speed = ZERO_SPEED;
+            } else if ( speed == ZERO_SPEED ) {
+                speed = SPEED_BOTTOM_BOUND;
+            } else if ( speed < SPEED_UP_BOUND ) {
+                speed += SPEED_STEP;
+            }
         break;
     case DW:
         if ( speed == SPEED_BOTTOM_BOUND ) {
@@ -71,15 +77,17 @@ static double __step_speed ( enum speed_direct drct ) {
 }
 
 
-inline int yaw_speed (enum yaw_direct drct) {
+inline int step_yaw (enum yaw_direct drct) {
 
-    change_wheels_speed(__step_yaw(drct), INCORRECT);
+    __step_yaw(drct);
+    change_wheels_speed();
     return 0;
 }
 
 inline int step_speed (enum speed_direct drct) {
 
-    change_wheels_speed(INCORRECT, __step_speed(drct));
+    __step_speed(drct);
+    change_wheels_speed();
     return 0;
 }
 
@@ -87,13 +95,11 @@ int nstep_yaw ( unsigned int n, enum yaw_direct drct ) {
 
     n = n > MAX_YAW_STEPS ? MAX_YAW_STEPS : n;
 
-    double yaw;
-
     int i;
     for ( i = 0; i < n; ++i )
-        yaw = __step_yaw ( drct );
+        __step_yaw ( drct );
 
-    change_wheels_speed ( yaw, INCORRECT );
+    change_wheels_speed ();
 
     return 0;
 }
@@ -102,24 +108,22 @@ int nstep_speed ( unsigned int n, enum speed_direct drct ) {
 
     n = n > MAX_SPEED_STEPS ? MAX_SPEED_STEPS : n;
 
-    double speed;
-
     int i;
     for ( i = 0; i < n; ++i )
-        speed = __step_speed ( drct );
+        __step_speed ( drct );
 
-    change_wheels_speed ( INCORRECT, speed );
+    change_wheels_speed ();
 
     return 0;
 }
 
 
-static int change_wheels_speed ( double y, double s ) {
+static int change_wheels_speed () {
 
-    static double yaw = ZERO_YAW, speed = ZERO_SPEED;
+    //static double yaw = ZERO_YAW, speed = ZERO_SPEED;
 
-    yaw = ( y == INCORRECT ) ? yaw : y;
-    speed = ( s == INCORRECT ) ? speed: s;
+    //yaw = ( y == INCORRECT ) ? yaw : y;
+    //speed = ( s == INCORRECT ) ? speed: s;
 
     double left_pair_speed, right_pair_speed;
 
@@ -132,7 +136,7 @@ static int change_wheels_speed ( double y, double s ) {
             set_stop_state();
         }
 
-        printf ( "y:%f\n", yaw );
+        //printf ( "y:%f\n", yaw );
         right_pair_speed = left_pair_speed = CORRECT_COEF * fabs ( yaw ) * SPEED_UP_BOUND;
 
     } else {

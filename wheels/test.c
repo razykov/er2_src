@@ -49,6 +49,10 @@ int main() {
     
     stop();
     
+    nstep_speed(2, UP);
+    usleep(2.0 * 1000000);
+    stop();
+    
     return 0;
 }
  
