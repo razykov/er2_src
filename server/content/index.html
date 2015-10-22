@@ -1,140 +1,90 @@
+<!DOCTYPE html>
 <html lang="ru">
+
 <head>
-<meta charset='utf-8'>
-<title> Управление роботом ER </title>
-<script type=text/javascript src="jquery.js"></script>
-<script type=text/javascript>
-function log(s) { $('#log').html(s+"\n"+$('#log').html()); }
-function checkServerWorker(func)
-{
-$.get('cmd?action=checkServerWorker', 
-  function(res,status) 
-  {
-    if (status=='success') 
-    {
-      if (res != "OK") 
-      {
-        $('p.error').html("К серверу подключились, но скрипт вернул не 0");
-        $('p.error').css('display','block');
-        return;
-      }
-      else $('p.error').css('display','none');
-    }
-    $('p.error').html("Не могу подключиться к серверу");
-    $('p.error').css('display','block');
-  }
-);
-}
+    <meta charset='utf-8'>
+    <title> Управление роботом ER </title>
 
-function command(cmd)
-{
-  $.get('cmd?action='+cmd,
-    function(res,status) 
-    {
-      if (status=='success' && res!="OK") alert(res);
-    }
-  );
-  
-  log('Отправили команду '+cmd);
-}
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 
-function getStatus()
-{
-  $get('cmd?action=getStatus', function (res,status) {
-      if (status=='success') $('#status').html(res);
-    }
-  );
-}
+    <script type=text/javascript src="jquery.js"></script>
+    <script type=text/javascript src="main.js"></script>
 
-function say()
-{
-  s = $('#Speech').get(0).value;
-  $.get("cmd?action=say&text="+encodeURIComponent(s),
-    function(res,status) 
-    {
-      if (status=='success' && res!="OK") log('Сказали: '+s);
-      else log('Не получилось сказать: status='+status+' res='+res);
-      $('#Speach').get(0).value = "";
-    });
-    
-}
+    <script type=text/javascript>
+        $(document).keypress(function (e) {
+            var code = e.keyCode || e.which;
+            if (code == 13) say();
+            if (code == 32) command('stop');
+            if (code == 37) command('left');
+            if (code == 39) command('right');
+            if (code == 38) command('up');
+            if (code == 40) command('down');
+            if (code == 32 || code == 37 || code == 39 ||
+                code == 38 || code == 40 || code == 13)
+                e.preventDefault();
+            //return false;
+        });
 
-$(document).ready(function(){
-  checkServerWorker();
-  setInterval(getStatus,1000);
-  setInterval(checkServerWorker,5000);
-});
-$(document).keypress(function(e) {
-  var code = e.keyCode || e.which;
-  if(code == 13) say();
-  if(code == 32) command('stop');
-  if(code == 37) command('left');
-  if(code == 39) command('right');
-  if(code == 38) command('up');
-  if(code == 40) command('down');
-  if(code == 32 || code == 37 || code == 39 || 
-     code == 38 || code == 40 || code == 13)
-    e.preventDefault();
-  //return false;
-});
-</script>
-<style type="text/css">
-body {
-  background-color:#fff;
-  padding:0px 0px 0px 0px;
-  margin: 0px;
-}
-#top {
-  width: 100%;
-  height: 40px;
-  background: #fcfcfc;
-  background: linear-gradient(#fcfcfc, #cccccc);
-  padding: 3px;
-  border: 1px solid #333;
-  margin: 0px
-}
-input.button_rule { width:50px; font-weight:bold; font-size:25pt; }
-p.error { display:none; color:red; font-weight:bold; }
 
-</style>
+        $(document).ready(function () {
+            checkWidth();
+            checkServerWorker();
+            window.onresize = checkWidth;
+        });
+    </script>
+
+    <link rel="stylesheet" type="text/css" href="index.css" />
 </head>
 
 
-
-
 <body>
-<!-- <h1 style="text-align:center"> Управление роботом ER </h1> -->
-<div id="top" >
-  <p style="text-align:left; size:15px;"><b> Управление роботом ER </b></p>
-  <img src="img/wireless/stat-00.png" float="right" alt="logo" />
-</div>
 
-<img src="img/bot_view.jpg" style="float:left" width="180px"> 
+    <div id="top">
+        <div id="page-title">
+            <p style="text-align:left; width:250px; margin: 5px;"><b> Управление роботом ER </b></p>
+        </div>
+        <div id="robot-attr">
+            <img id="attr-wireless" class="attribute" src="img/wireless/stat-00.png" style='max-width: 100%' alt="Wireless" />
+        </div>
+    </div>
 
-<div id='control' style="display:inline-block; width:180px; float:left; text-align:center; padding:20px 0px; margin: 20px;">
-  <input type=button class="button_rule" value="&uarr;" onclick="command('up')"><br>
-  <input type=button class="button_rule" value="&larr;" onclick="command('left')">
-  <input type=button class="button_rule" style="background:url(img/stop.png) no-repeat center" onclick="command('stop')">
-  <input type=button class="button_rule" value="&rarr;" onclick="command('right')"><br>
-  <input type=button class="button_rule" value="&darr;" onclick="command('down')">
-</div>
+    <div id="workpanel">
+        <div id="control">
 
-<br>
+<!--            <p class="error"></p>-->
 
-<img src="http://192.168.1.201:81/?action=stream" width="480" height="360" aligin="right" />
+            <div id="cpanel">
+                <div id="camera">
+                    <img id="camera-content" src="http://192.168.1.201:81/?action=stream" />
 
-<br>
+                    <div id="inpanel">
+                        <input type=image class="button_rule imgbutton" src="img/go/forth.svg" onclick="command('up')" alt="">
+                        <br>
+                        <input type=image class="button_rule imgbutton" src="img/go/left.svg" onclick="command('left')" alt="">
+                        <input type=image class="button_rule imgbutton" src="img/go/stop.svg" onclick="command('stop')" alt="">
+                        <input type=image class="button_rule imgbutton" src="img/go/right.svg" onclick="command('right')" alt="">
+                        <br>
+                        <input type=image class="button_rule imgbutton" src="img/go/back.svg" onclick="command('down')" alt="">
+                    </div>
+                </div>
+            </div>
+            <textarea id="log">Конец лога</textarea>
+        </div>
 
-<input type=text id="Speech" value="" size=25>
-<input type=button value="Сказать" onclick="say()">
+        <div id="rpanel">
+            <div style="width: 98%; height: 30px; margin: 3% 1%; border: 1px solid #dddddd; border-radius: 3px;">
+                <input type=image class="imgbutton" style="width: 30px; height: 30px;" src="img/say.svg" onclick="say()" alt="">
+                <input type=text id="speech" value="">
+            </div>
 
-<br>
+            <div id="speech-cache">
+                <div id="speech-block"><b> Привет! </b></div>
+                <div id="speech-block"><b> Я робот Е Р. </b></div>
+            </div>
+        </div>
 
-<p class="error"></p>
-
-Статус:
-<p id="status"></p>
-<textarea id="log" style="width:100%; height:400px;">Конец лога</textarea>
+    </div>
 
 </body>
+
 </html>
