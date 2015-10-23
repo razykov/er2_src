@@ -51,7 +51,9 @@ answer_to_connection ( void *cls, struct MHD_Connection *connection,
         ret = MHD_get_connection_values ( connection, MHD_GET_ARGUMENT_KIND, run_actions, NULL );
     } else {
 
-        const char* url_file = ( strcmp ( url, "/" ) == 0 ) ? MAIN_PAGE : url+1;
+        char url_file[1024] = "/var/www/er_server/";
+	strcat(url_file, ( strcmp ( url, "/" ) == 0 ) ? MAIN_PAGE : url+1 );
+        //( strcmp ( url, "/" ) == 0 ) ? MAIN_PAGE : url+1;
 
         char cmd[1024] = SHELL_GET_MIME_TYPE;
         strcat ( cmd, url_file );
