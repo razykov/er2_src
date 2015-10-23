@@ -11,6 +11,8 @@ set(CONTENT_INSTALL_PATH /var/www/er_server/)
 
 set(CONTENT content/)
 set(STREAMER er_stream)
+set(GETDBM get_dbm)
+set(SAY say)
 
 if(CrossC)
 message("Cross compiling")
@@ -41,7 +43,7 @@ target_link_libraries(${PROJECT} microhttpd wheels mcontrol)
 
 install(TARGETS ${PROJECT} 
 	DESTINATION ${INSTALL_PATH})
-install(FILES ${STREAMER} 
+install(FILES ${STREAMER} ${GETDBM} ${SAY}
 	DESTINATION ${INSTALL_PATH} 
 	PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ 
 		    GROUP_EXECUTE GROUP_READ)

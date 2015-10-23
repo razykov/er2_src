@@ -73,16 +73,17 @@
                     $('#attr-wireless').get(0).src = "img/wireless/stat-00.png";
                 });
 
-            
+
         }
 
         function say() {
             s = $('#speech').get(0).value;
-            $.get("cmd?action=say&text=" + encodeURIComponent(s),
-                function (res, status) {
-                    if (status == 'success' && res != "OK") log('Сказали: ' + s);
-                    else log('Не получилось сказать: status=' + status + ' res=' + res);
-                    $('#speech').get(0).value = "";
-                });
-
+            if (s != "") {
+                $.get("cmd?action=say&text=" + encodeURIComponent(s),
+                    function (res, status) {
+                        if (status == 'success' && res == "OK") log('Сказали: ' + s);
+                        else log('Не получилось сказать: status=' + status + ' res=' + res);
+                        $('#speech').get(0).value = "";
+                    });
+            }
         }

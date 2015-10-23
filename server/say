@@ -1,0 +1,10 @@
+#!/bin/bash
+
+say_text=""
+for word in $*
+do
+say_text="$say_text$word%20"
+done
+
+curl -Gs http://staff.mmcs.sfedu.ru/~rv/speak/speak.py?text="$say_text" | aplay -q
+
