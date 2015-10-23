@@ -26,7 +26,7 @@
 static int send_file ( const char* file_name, const char* mime_type, struct MHD_Connection *connection );
 static int run_actions ( void *cls, enum MHD_ValueKind kind, const char *key, const char *value );
 static int send_text ( const char* text, struct MHD_Connection* connection, int mhd_responce);
-
+static void get_wireless_stat (char* res);
 
 static struct MHD_Connection* tmp_connect;
 static int silent = FALSE, quiet = FALSE;
@@ -68,6 +68,11 @@ answer_to_connection ( void *cls, struct MHD_Connection *connection,
         mime[strlen ( mime ) - 1] = '\0';
 
         pclose ( f );
+
+	// temp solution
+	if (strcmp(mime, "text/plain") == 0)
+	    if (strstr(url_file, ".css") != NULL)
+	        strcpy(mime, "text/css");
 
         ret = send_file ( url_file, mime, connection );
 
@@ -135,8 +140,18 @@ run_actions ( void *cls, enum MHD_ValueKind kind, const char *key, const char *v
 
         if ( isval ( "checkServerWorker" ) )
             send_text ( "OK", tmp_connect, MHD_YES );
-        else if ( isval ( "getStatus" ) )
-	  send_text ( "It's work!", tmp_connect, MHD_HTTP_OK );
+        else if ( isval ( "getStatus" ) ) {
+	  char wstat[5];
+	  get_wireless_stat(wstat);
+	  
+	  char status_msg[1024];
+	  strcpy(status_msg, "wireless_level:");
+	  strcat(status_msg, wstat);
+	  
+	  printf("%s\n", status_msg);
+	  
+	  send_text ( status_msg, tmp_connect, MHD_HTTP_OK );
+	}
         else if ( isval ( "stop" ) ) {
             stop();
             send_OK();
@@ -157,6 +172,34 @@ run_actions ( void *cls, enum MHD_ValueKind kind, const char *key, const char *v
     }
 
     return MHD_YES;
+}
+
+static void
+get_wireless_stat(char* res)
+{
+  FILE *f = popen ( "get_dbm", "r" );
+  if ( f == NULL ) {
+    printf ( "ERROR: Run shell command : %d (%s)\n", errno, strerror ( errno ) );
+    return NULL;
+  }
+  
+  char buffer[128];
+  if ( fgets ( buffer, 3, f ) == NULL )
+    return NULL;
+  
+  int wireless_level = 100 - atoi(buffer);
+  if(wireless_level > 80)
+    strcpy(res, "100 ");
+  else if(wireless_level > 60)
+    strcpy(res, "75 ");
+  else if(wireless_level > 40)
+    strcpy(res, "50 ");
+  else if(wireless_level > 20)
+    strcpy(res, "25 ");
+  else
+    strcpy(res, "00 ");
+  
+  pclose ( f );
 }
 
 int
