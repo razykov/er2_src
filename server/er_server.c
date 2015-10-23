@@ -3,10 +3,12 @@
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/select.h>
 #include <sys/socket.h>
+// #include <sys/wait.h>
 #include <getopt.h>
 #include <microhttpd.h>
 #include "wheels.h"
@@ -28,6 +30,7 @@ static int run_actions ( void *cls, enum MHD_ValueKind kind, const char *key, co
 static int send_text ( const char* text, struct MHD_Connection* connection, int mhd_responce);
 static void get_wireless_stat (char* res);
 
+static struct MHD_Daemon *mhd_daemon;
 static struct MHD_Connection* tmp_connect;
 static int silent = FALSE, quiet = FALSE;
 
@@ -218,10 +221,23 @@ get_wireless_stat(char* res)
     pclose ( f );
 }
 
+void sig_handler(int signo)
+{
+  if (signo == SIGINT) {
+    stop();
+    MHD_stop_daemon ( mhd_daemon );
+  }
+}
+
 int
 main ( int argc, char** argv ) {
+  
+    if (signal(SIGINT, sig_handler) == SIG_ERR) {
+      printf("ERROR: Can't catch SIGINT\n");
+      return -1;
+    }
+  
     int c;
-
     while ( ( c = getopt ( argc, argv, "sq" ) ) != -1 )
         switch ( c ) {
         case 's':
@@ -237,19 +253,16 @@ main ( int argc, char** argv ) {
     init_wheels();
     stop();
 
-    struct MHD_Daemon *daemon;
-    daemon = MHD_start_daemon ( MHD_USE_SELECT_INTERNALLY, PORT, NULL, NULL,
+    mhd_daemon = MHD_start_daemon ( MHD_USE_SELECT_INTERNALLY, PORT, NULL, NULL,
                                 &answer_to_connection, NULL, MHD_OPTION_END );
-    if ( NULL == daemon ) {
+
+    if ( NULL == mhd_daemon ) {
         stop();
         return 1;
     }
+    
+    pause();
 
-    getchar();
-
-    stop();
-
-    MHD_stop_daemon ( daemon );
     return 0;
 }
 

@@ -1,0 +1,12 @@
+[Unit]
+Description=ER Robot Web Server
+After=network-online.target nss-lookup.target
+Requires=er_video.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/er_server -s
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

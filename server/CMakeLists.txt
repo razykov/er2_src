@@ -8,11 +8,13 @@ option(CrossC "CrossC")
 
 set(INSTALL_PATH /usr/bin/)
 set(CONTENT_INSTALL_PATH /var/www/er_server/)
+set(SERVICES_INSTALL_PATH /usr/lib/systemd/system/)
 
 set(CONTENT content/)
-set(STREAMER er_stream)
+set(VIDEO er_video)
 set(GETDBM get_dbm)
 set(SAY say)
+set(SERVICES er_server.service er_video.service)
 
 if(CrossC)
 message("Cross compiling")
@@ -43,9 +45,14 @@ target_link_libraries(${PROJECT} microhttpd wheels mcontrol)
 
 install(TARGETS ${PROJECT} 
 	DESTINATION ${INSTALL_PATH})
-install(FILES ${STREAMER} ${GETDBM} ${SAY}
+install(FILES ${VIDEO} ${GETDBM} ${SAY}
 	DESTINATION ${INSTALL_PATH} 
 	PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ 
 		    GROUP_EXECUTE GROUP_READ)
+install(FILES ${SERVICES}
+	DESTINATION ${SERVICES_INSTALL_PATH} 
+	PERMISSIONS OWNER_WRITE OWNER_READ 
+		    GROUP_READ WORLD_READ)
 install(DIRECTORY ${CONTENT} 
 	DESTINATION ${CONTENT_INSTALL_PATH})
+install(CODE "execute_process(COMMAND systemctl daemon-reload)")

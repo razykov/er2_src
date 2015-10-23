@@ -1,0 +1,11 @@
+[Unit]
+Description=ER Robot Video Stream
+After=network-online.target nss-lookup.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/er_video
+#Restart=always
+
+[Install]
+WantedBy=multi-user.target
