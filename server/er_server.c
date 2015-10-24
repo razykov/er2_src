@@ -132,7 +132,7 @@ send_text ( const char* text, struct MHD_Connection* connection, int mhd_responc
 
     response =
         MHD_create_response_from_buffer ( strlen ( text ), ( void * ) text, MHD_RESPMEM_PERSISTENT );
-
+    MHD_add_response_header ( response, "Content-Type", "text/plain" );
     ret = MHD_queue_response ( connection, mhd_responce, response );
     MHD_destroy_response ( response );
 
