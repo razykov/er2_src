@@ -3,7 +3,7 @@
             checkServerWorker();
             window.onresize = checkWidth;
 
-            setInterval(getStatus, 1000);
+            setInterval(getStatus, 3000);
         });
 
         function log(s) {
@@ -26,6 +26,10 @@
             );
         }
 
+        function preload() {
+            var img = new Image();
+            img.src = "img/wireless/stat-00.png";
+        }
 
         function checkWidth() {
             var winH = $(window).height();

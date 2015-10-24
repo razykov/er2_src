@@ -1,4 +1,4 @@
 #!/bin/bash
 
-sudo mjpg_streamer -i "/usr/lib/input_uvc.so -d /dev/video0 -r 480x360 -f 24" -o "/usr/lib/output_http.so -p 81 -w 
+sudo mjpg_streamer -i "/usr/lib/input_uvc.so -d /dev/video0 -r 320x240 -f 15" -o "/usr/lib/output_http.so -p 81 -w 
 /var/www/mjpg_streamer"
