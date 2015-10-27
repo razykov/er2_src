@@ -40,7 +40,8 @@ answer_to_connection ( void *cls, struct MHD_Connection *connection,
                        const char *url, const char *method,
                        const char *version, const char *upload_data,
                        size_t *upload_data_size, void **con_cls ) {
-    printf ( "New %s request for %s using version %s\n", method, url, version );
+    if (!quiet)
+      printf ( "New %s request for %s using version %s\n", method, url, version );
 
     int ret = 0;
 
@@ -56,8 +57,7 @@ answer_to_connection ( void *cls, struct MHD_Connection *connection,
 
         char url_file[1024] = "/var/www/er_server/";
 	strcat(url_file, ( strcmp ( url, "/" ) == 0 ) ? MAIN_PAGE : url+1 );
-        //( strcmp ( url, "/" ) == 0 ) ? MAIN_PAGE : url+1;
-
+        
         char cmd[1024] = SHELL_GET_MIME_TYPE;
         strcat ( cmd, url_file );
 
@@ -119,8 +119,9 @@ send_file ( const char* file_name, const char* mime_type, struct MHD_Connection 
     ret =
         MHD_queue_response ( connection, MHD_HTTP_OK, response );
     MHD_destroy_response ( response );
-
-    printf ( "SEND FILE: %s (%s)\n", file_name, mime_type );
+    
+    if (!silent)
+      printf ( "SEND FILE: %s (%s)\n", file_name, mime_type );
 
     return ret;
 }
@@ -155,7 +156,9 @@ run_actions ( void *cls, enum MHD_ValueKind kind, const char *key, const char *v
             char status_msg[1024];
             strcpy(status_msg, "wireless_level:");
             strcat(status_msg, wstat);
-
+	    
+	    if(!silent)
+	      printf("SENT: %s\n", status_msg);
             send_text ( status_msg, tmp_connect, MHD_HTTP_OK );
         } else if ( isval("say") ) {
             strcpy(act, "say");
@@ -182,10 +185,10 @@ run_actions ( void *cls, enum MHD_ValueKind kind, const char *key, const char *v
         if( strcmp( act, "say" ) == 0 ) {
 	    char buffer[2048] = "say ";
 	    strcat(buffer, value);
-	    //strcat(buffer, " &");
-            system(buffer);
+	    system(buffer);
 	    
-	    printf("said: %s\n", value);
+	    if (!silent)
+	      printf("SAID: %s\n", value);
         }
         strcpy(act, "");
     }
@@ -232,11 +235,13 @@ void sig_handler(int signo)
 int
 main ( int argc, char** argv ) {
   
+    // SIGINT handler add
     if (signal(SIGINT, sig_handler) == SIG_ERR) {
       printf("ERROR: Can't catch SIGINT\n");
       return -1;
     }
-  
+    
+    // argc argv parse
     int c;
     while ( ( c = getopt ( argc, argv, "sq" ) ) != -1 )
         switch ( c ) {
@@ -245,22 +250,27 @@ main ( int argc, char** argv ) {
             break;
         case 'q':
             quiet = TRUE;
+	    silent = TRUE;
             break;
         default:
             abort();
         }
 
+    // Wheels module initialization
     init_wheels();
     stop();
 
+    // Start Microhttp daemon
     mhd_daemon = MHD_start_daemon ( MHD_USE_SELECT_INTERNALLY, PORT, NULL, NULL,
                                 &answer_to_connection, NULL, MHD_OPTION_END );
-
+    
+    // Exit if Microhttp daemot does not start
     if ( NULL == mhd_daemon ) {
         stop();
         return 1;
     }
     
+    // Wait SIGINT
     pause();
 
     return 0;
