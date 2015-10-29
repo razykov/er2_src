@@ -8,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="index.css" />
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 
+<!--    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>-->
     <script type=text/javascript src="jquery.js"></script>
     <script type=text/javascript src="main.js"></script>
 </head>
@@ -20,13 +21,13 @@
             <p style="text-align:left; width:250px; margin: 5px;"><b> Управление роботом ER </b></p>
         </div>
         <div id="robot-attr">
-            <img id="attr-wireless" class="attribute" src="img/wireless/stat-00.png" style='max-width: 100%' alt="Wireless" />
+<img id="attr-wireless" class="attribute" src="img/wireless/stat-00.png" style='max-width: 100%' alt="Wireless" />
             <img id="pow-button" class="attribute imgbutton" src="img/power.svg" style='max-width: 100%' onclick="showPowmenu()" alt="Power" />
             
             <div id="powmenu">
             <ul>
-                <li><a onclick="reboot()"><b>Перезагрузка</b></a></li>
-                <li><a onclick="poweroff()"><b>Выключение</b></a></li>
+                <li class="powmenuText"><a onclick="reboot()"><b>Перезагрузка</b></a></li>
+                <li class="powmenuText"><a onclick="poweroff()"><b>Выключение</b></a></li>
             </ul>
             </div>
             
@@ -63,8 +64,8 @@
             </div>
 
             <div id="speech-cache">
-                <div id="speech-block"><b> Привет! </b></div>
-                <div id="speech-block"><b> Я робот Е Р. </b></div>
+                <div class="speech-block"><b>Привет!</b></div>
+                <div class="speech-block"><b>Я робот.</b></div>
             </div>
         </div>
 

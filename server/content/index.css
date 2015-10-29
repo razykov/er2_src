@@ -126,14 +126,18 @@ p.error {
     display: inline-block;
 }
 
-#speech-block {
+.speech-block {
     width: calc(100% - 6px);
     padding: 2px;
     margin: 1% 1%;
-    background: #ededed;
-    background: linear-gradient(#fcfcfc, #ededed);
+    background: #f5f5f5;
     border: 1px solid #dddddd;
     border-radius: 3px;
+    cursor: pointer;
+}
+
+.speech-block:hover {
+    color: orange;
 }
 
 #powmenu {
@@ -146,6 +150,10 @@ p.error {
     border-radius: 6px;
     box-shadow: 0 2px 2px;
     display: none;
+}
+
+.powmenuText:hover {
+    color: orange;
 }
 
 li {

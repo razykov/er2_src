@@ -4,6 +4,10 @@
             window.onresize = checkWidth;
 
             setInterval(getStatus, 3000);
+            
+            $(".speech-block").click(function(e) {
+                sayText($(e.target).text());               
+            });
         });
 
         $(document).keypress(function (e) {
@@ -25,7 +29,7 @@
             $("#powmenu").hide();
             e.stopPropagation();
         });
-
+      
         function log(s) {
             $('#log').html(s + "\n" + $('#log').html());
         }
@@ -102,20 +106,21 @@
 
         function say() {
             s = $('#speech').get(0).value;
+            sayText(s);
+            $('#speech').get(0).value = "";
+        }
+
+        function sayText(s) {
             if (s != "") {
                 $.get("cmd?action=say&text=" + encodeURIComponent(s),
                     function (res, status) {
                         if (status == 'success' && res == "OK") log('Сказали: ' + s);
                         else log('Не получилось сказать: status=' + status + ' res=' + res);
-                        $('#speech').get(0).value = "";
                     });
             }
         }
 
         function showPowmenu() {
-//            if ( $('#powmenu').is(':visible') )
-//                $('#powmenu').hide();
-//            else
                 $('#powmenu').show();
         }
 
