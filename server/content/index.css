@@ -19,14 +19,15 @@ img.attribute {
 }
 
 #page-title {
-    display: inline-block;
+    float: left;
+/*    display: inline-block;*/
 }
 
 #robot-attr {
     height: 25px;
     vertical-align: top;
     float: right;
-    display: inline-block;
+/*    display: inline-block;*/
 }
 
 #workpanel {
@@ -133,4 +134,27 @@ p.error {
     background: linear-gradient(#fcfcfc, #ededed);
     border: 1px solid #dddddd;
     border-radius: 3px;
+}
+
+#powmenu {
+    position: absolute;
+    right: 0px;
+    align-content: center;
+    background: #ededed;
+    background: linear-gradient(#fcfcfc, #ededed);
+    border: 1px solid #888888;
+    border-radius: 6px;
+    box-shadow: 0 2px 2px;
+    display: none;
+}
+
+li {
+    list-style-type: none;
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+ul {
+    margin: 0;
+    padding: 7px;
 }

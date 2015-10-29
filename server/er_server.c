@@ -29,6 +29,7 @@ static int send_file ( const char* file_name, const char* mime_type, struct MHD_
 static int run_actions ( void *cls, enum MHD_ValueKind kind, const char *key, const char *value );
 static int send_text ( const char* text, struct MHD_Connection* connection, int mhd_responce);
 static void get_wireless_stat (char* res);
+static void sig_handler(int signo);
 
 static struct MHD_Daemon *mhd_daemon;
 static struct MHD_Connection* tmp_connect;
@@ -178,7 +179,15 @@ run_actions ( void *cls, enum MHD_ValueKind kind, const char *key, const char *v
         } else if ( isval ( "down" ) ) {
             step_speed ( DW );
             send_OK();
-        } else
+        } else if ( isval ( "reboot" ) ) {
+	    //sig_handler(SIGINT);
+	    system("shutdown -r now");
+	    exit(0);
+	} else if ( isval ( "poweroff" ) ) {
+	    //sig_handler(SIGINT);
+	    system("shutdown -h now");
+	    exit(0);
+	} else
             send_text ( "Unknown action", tmp_connect, MHD_NO );
 
     } else if ( strcmp ( key, "text" ) == 0 ) {
@@ -224,7 +233,8 @@ get_wireless_stat(char* res)
     pclose ( f );
 }
 
-void sig_handler(int signo)
+static void 
+sig_handler(int signo)
 {
   if (signo == SIGINT) {
     stop();

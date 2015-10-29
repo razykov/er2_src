@@ -6,6 +6,26 @@
             setInterval(getStatus, 3000);
         });
 
+        $(document).keypress(function (e) {
+            var code = e.keyCode || e.which;
+            if (code == 13) say();
+            if (code == 32) command('stop');
+            if (code == 37) command('left');
+            if (code == 39) command('right');
+            if (code == 38) command('up');
+            if (code == 40) command('down');
+            //if (code == 32 || code == 37 || code == 39 ||
+            //    code == 38 || code == 40 || code == 13)
+            //    e.preventDefault();
+            //return false;
+        });
+
+        $(document).click(function(e) {
+            if($(e.target).closest("#pow-button").length) return;
+            $("#powmenu").hide();
+            e.stopPropagation();
+        });
+
         function log(s) {
             $('#log').html(s + "\n" + $('#log').html());
         }
@@ -90,4 +110,25 @@
                         $('#speech').get(0).value = "";
                     });
             }
+        }
+
+        function showPowmenu() {
+//            if ( $('#powmenu').is(':visible') )
+//                $('#powmenu').hide();
+//            else
+                $('#powmenu').show();
+        }
+
+        function poweroff() {
+            $.get("cmd?action=poweroff", function (res, status) {
+                if (status == 'success' && res == "OK") log("Выключение");
+                else log('Ошибка выключения: status=' + status + ' res=' + res);
+            });
+        }
+
+        function reboot() {
+            $.get("cmd?action=reboot", function (res, status) {
+                if (status == 'success' && res == "OK") log("Перезагрузка");
+                else log('Ошибка при попытке перезагрузки: status=' + status + ' res=' + res);
+            });
         }

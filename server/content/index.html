@@ -5,28 +5,11 @@
     <meta charset='utf-8'>
     <title> Управление роботом ER </title>
 
+    <link rel="stylesheet" type="text/css" href="index.css" />
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 
     <script type=text/javascript src="jquery.js"></script>
     <script type=text/javascript src="main.js"></script>
-
-    <script type=text/javascript>
-        $(document).keypress(function (e) {
-            var code = e.keyCode || e.which;
-            if (code == 13) say();
-            if (code == 32) command('stop');
-            if (code == 37) command('left');
-            if (code == 39) command('right');
-            if (code == 38) command('up');
-            if (code == 40) command('down');
-            //if (code == 32 || code == 37 || code == 39 ||
-            //    code == 38 || code == 40 || code == 13)
-            //    e.preventDefault();
-            //return false;
-        });
-    </script>
-
-    <link rel="stylesheet" type="text/css" href="index.css" />
 </head>
 
 
@@ -38,6 +21,15 @@
         </div>
         <div id="robot-attr">
             <img id="attr-wireless" class="attribute" src="img/wireless/stat-00.png" style='max-width: 100%' alt="Wireless" />
+            <img id="pow-button" class="attribute imgbutton" src="img/power.svg" style='max-width: 100%' onclick="showPowmenu()" alt="Power" />
+            
+            <div id="powmenu">
+            <ul>
+                <li><a onclick="reboot()"><b>Перезагрузка</b></a></li>
+                <li><a onclick="poweroff()"><b>Выключение</b></a></li>
+            </ul>
+            </div>
+            
         </div>
     </div>
 
