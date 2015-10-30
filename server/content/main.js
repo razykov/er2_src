@@ -12,16 +12,21 @@
 
         $(document).keypress(function (e) {
             var code = e.keyCode || e.which;
-            if (code == 13) say();
-            if (code == 32) command('stop');
-            if (code == 37) command('left');
-            if (code == 39) command('right');
-            if (code == 38) command('up');
-            if (code == 40) command('down');
-            //if (code == 32 || code == 37 || code == 39 ||
-            //    code == 38 || code == 40 || code == 13)
-            //    e.preventDefault();
-            //return false;
+
+            if(!$("#speech").is(":focus")) {
+                if (code == 32) command('stop');
+                if (code == 37) command('left');
+                if (code == 39) command('right');
+                if (code == 38) command('up');
+                if (code == 40) command('down');
+                if (code == 32 || code == 37 || code == 39 ||
+                    code == 38 || code == 40)
+                    e.preventDefault();
+                return false;
+            }
+            else {
+                if (code == 13) say();
+            }
         });
 
         $(document).click(function(e) {
@@ -111,6 +116,10 @@
         }
 
         function sayText(s) {
+            if (s.length >= 2048) {
+                log("Ошибка: слишком длинная фраза.");
+                return;
+            }
             if (s != "") {
                 $.get("cmd?action=say&text=" + encodeURIComponent(s),
                     function (res, status) {
