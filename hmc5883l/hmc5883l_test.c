@@ -6,6 +6,7 @@
 #include <math.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <signal.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -26,6 +27,18 @@ const int HMC5883L_I2C_ADDR = 0x1E;
 #define ID_STRING "H43"
 
 #define GAIN 1370		//000 setting
+
+#define HMC_ADDR	"/var/www/er_server/hmc"
+
+FILE *fd_hmc;
+
+void
+signalHandler() 
+{
+  fclose(fd_hmc);
+  
+  exit(0);
+}
 
 void
 selectDevice (int fd, int addr, char *name)
@@ -61,9 +74,12 @@ main (int argc, char **argv)
   struct timeval tv;
   struct timezone tz;		//ignored
   struct timeval data_timestamp;	//
-  int resolution = 100000;	//microseconds
+  int resolution = 10000;	//microseconds
   long next_timestamp;
 
+  
+  signal( SIGINT, signalHandler );
+  
   if ((fd = open ("/dev/i2c-1", O_RDWR)) < 0)
     {
       // Open port for reading and writing
@@ -101,15 +117,20 @@ main (int argc, char **argv)
   //Configuration
 
   //writeToDevice(fd, 0x01, 0);
-  writeToDevice (fd, CONFIG_A, 0xb01101000);	//8 sample averaging
-  writeToDevice (fd, CONFIG_B, 0xb00000000);	//max gain
-  writeToDevice (fd, MODE, 0xb00000011);	//idle mode
+  writeToDevice (fd, CONFIG_A, 0b01101000);	//8 sample averaging
+  writeToDevice (fd, CONFIG_B, 0b00000000);	//max gain
+  writeToDevice (fd, MODE, 0b00000011);	//idle mode
 
   //find current time
   gettimeofday (&data_timestamp, &tz);
   data_timestamp.tv_sec += 1;	//start loggin at start of next second
   data_timestamp.tv_usec = 0;
 
+  int cnt = 0;
+  fd_hmc = fopen( HMC_ADDR, "w");
+  
+  fprintf(fd_hmc, "# X Y Z aZ pX pY\n");
+  
   while (1)
     {				//record forever   
 
@@ -129,7 +150,7 @@ main (int argc, char **argv)
 	}
 
       //initiate single conversion
-      writeToDevice (fd, MODE, 0xb00000001);	//single measurement
+      writeToDevice (fd, MODE, 0b00000001);	//single measurement
 
       //wait 7 milliseconds
       usleep (7000);
@@ -148,21 +169,27 @@ main (int argc, char **argv)
 	}
       else
 	{
-          
-	  short x = (buf[0] << 8) | buf[1];
+          short x = (buf[0] << 8) | buf[1];
 	  short y = (buf[4] << 8) | buf[5];
 	  short z = (buf[2] << 8) | buf[3];
           
-	  float angle = atan2 (y, x) * 180 / M_PI;
-	  float mag = sqrt (x * x + y * y + z * z);
+	  double angle_rad = atan2(y, x);
+	  double angle_grad = angle_rad * 180 / M_PI;
+	  
+	  double pX = cos(angle_rad);
+	  double pY = sin(angle_rad);
+	  //angle = (x < 0 && y < 0) ? - atan2(y, x) * 180 / M_PI : atan2(y, x) * 180 / M_PI;
+	  
+	  //float mag = sqrt (x * x + y * y + z * z);          
+	  
+ 	  fprintf( fd_hmc, "%d %d %d %d %.2f %.2f %.2f\n", cnt++, x, y, z, angle_grad, pX, pY );
           
-          
-	  printf("x=%d, y=%d, z=%d\n", x, y, z);
-	  printf("angle = %0.1f, mag = %0.1f\n", angle,mag);
+	  //printf("x=%d, y=%d, z=%d\n", x, y, z);
+	  //printf("angle = %0.1f, mag = %0.1f\n", angle,mag);
 	  //printf("time: %ld.%06ld\n",tv.tv_sec, tv.tv_usec);
 // 	  printf ("%ld.%06ld, %d, %d, %d, %0.1f nT\n", data_timestamp.tv_sec,
 // 		  data_timestamp.tv_usec, x, y, z, 1e5 * mag / GAIN);
-	  fflush (stdout);
+	  //fflush (stdout);
 	}
 
       //advance data timestamp to next required time
