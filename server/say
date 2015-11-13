@@ -6,5 +6,5 @@ do
 say_text="$say_text$word%20"
 done
 
-curl -Gs http://staff.mmcs.sfedu.ru/~rv/speak/speak.py?text="$say_text" | aplay -q
+curl -Gs http://staff.mmcs.sfedu.ru/~rv/er/speak.py?text="$say_text" | aplay -q
 
