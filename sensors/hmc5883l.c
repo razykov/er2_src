@@ -7,7 +7,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <assert.h>
-#include <math.h>
 #include <pthread.h>
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
@@ -139,7 +138,13 @@ daemon_on(enum state_e st)
 double
 get_azimuth_rad()
 {
-
+  double az;
+  
+  pthread_mutex_lock(&xyz_mx);
+  az = atan2(y,x);
+  pthread_mutex_unlock(&xyz_mx);
+  
+  return az;
 }
 
 static void*
