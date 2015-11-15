@@ -17,7 +17,7 @@ set(SOURCES_TEST test.c)
 set(SOURCES_HMC5883L hmc5883l.c)
 
 add_library (${SENSORS_LIB} SHARED ${SOURCES_HMC5883L})
-target_link_libraries(${SENSORS_LIB} pthread)
+target_link_libraries(${SENSORS_LIB} pthread m)
 
 add_executable (${TEST_EXEC} ${SOURCES_TEST})
 target_link_libraries(${TEST_EXEC} ${SENSORS_LIB})

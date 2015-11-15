@@ -6,9 +6,11 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <assert.h>
+#include <math.h>
+#include <pthread.h>
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
-#include <assert.h>
 #include "hmc5883l.h"
 
 #define TRUE	(1 == 1)
@@ -59,7 +61,7 @@
 #define CONFIG_A 	0x00
 #define CONFIG_B 	0x01
 #define MODE 0x02
-// #define DATA 0x03		//read 6 bytes: x msb, x lsb, z msb, z lsb, y msb, y lsb
+#define DATA 0x03		//read 6 bytes: x msb, x lsb, z msb, z lsb, y msb, y lsb
 // #define STATUS 0x09
 #define ID_A 0x0A
 // #define ID_B 0x0B
@@ -67,19 +69,23 @@
 #define ID_STRING 	"H43"
 #define ID_STRING_LEN	(3)
 
+static void *measure_daemon (void *arg);
 static int sensor_detect (int fd);
 static int select_device (int fd, int addr, char *name);
 static int write_to_device (int fd, int reg, int val);
 static int i2c_addr_valid (int addr);
 
 
+static int fd;
+static int daemon_exit;
+static short x, y, z;
 static enum state_e filter;
+static pthread_t daemon_thread;
+static pthread_mutex_t xyz_mx, daemon_exit_mx;
 
 int
 init_hmc5883l()
 {
-  int fd;
-  
   if ((fd = open (I2C_FILE, O_RDWR)) < 0) {
     // Open port for reading and writing
     fprintf (stderr, "Failed to open i2c bus\n");
@@ -93,12 +99,16 @@ init_hmc5883l()
     return EXIT_FAILURE;
   }
   
-  //Configuration
+  // Configuration
   int res = TRUE;
   //writeToDevice(fd, 0x01, 0);
   res &= write_to_device (fd, CONFIG_A, MA_8 | DO_3Hz | MS_MODE_NORMAL);
   res &= write_to_device (fd, CONFIG_B,  GAIN_0_88 & GAIN_VALID);
   res &= write_to_device (fd, MODE, LS_MODE | IDLE_MODE);
+  
+  // Mutex create
+  pthread_mutex_init(&xyz_mx, NULL);
+  pthread_mutex_init(&daemon_exit_mx, NULL);
   
   return (res == TRUE) ? EXIT_SUCCESS : EXIT_FAILURE;    
 }
@@ -112,13 +122,66 @@ filter_on(enum state_e st)
 void
 daemon_on(enum state_e st)
 {
-  
+  if(st == ENABLE) {
+    if(daemon_exit != FALSE) {
+      daemon_exit = FALSE;
+      pthread_create(&daemon_thread, NULL, measure_daemon, NULL);
+    }
+  }
+  else
+  {
+    pthread_mutex_lock(&daemon_exit_mx);
+    daemon_exit = TRUE;
+    pthread_mutex_unlock(&daemon_exit_mx);
+  }
 }
 
 double
-get_azimuth()
+get_azimuth_rad()
 {
+
+}
+
+static void*
+measure_daemon(void* arg)
+{
+  char buf[16];
   
+  write_to_device (fd, MODE, LS_MODE | SM_MODE);
+  usleep (7000); //wait 7 milliseconds
+  
+  while(TRUE) {
+    
+    buf[0] = DATA;
+    
+    if ((write (fd, buf, 1)) != 1)
+    {
+      // Send the register to read from
+      fprintf (stderr, "Error writing to i2c slave\n");
+    }
+    
+    if (read (fd, buf, 6) == 6)
+    {
+      pthread_mutex_lock(&xyz_mx);
+      x = (buf[0] << 8) | buf[1];
+      y = (buf[4] << 8) | buf[5];
+      z = (buf[2] << 8) | buf[3];
+      pthread_mutex_unlock(&xyz_mx);
+    }
+    else
+    {
+      fprintf (stderr, "Unable to read from HMC5883L\n");
+    }    
+    
+    pthread_mutex_lock(&daemon_exit_mx);
+    if(daemon_exit)
+      break;
+    pthread_mutex_unlock(&daemon_exit_mx);
+  }
+  
+  write_to_device (fd, MODE, LS_MODE | IDLE_MODE);
+  
+  pthread_exit(NULL);
 }
 
 static int
