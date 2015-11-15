@@ -15,9 +15,6 @@
 #define TRUE	(1 == 1)
 #define FALSE	(!TRUE)
 
-#define I2C_ADDR_MIN	0x03
-#define I2C_ADDR_MAX	0x77
-
 #define DO_0_75Hz	(0b00000000)
 #define DO_1_5Hz	(0b00000100)
 #define DO_3Hz		(0b00001000)
@@ -112,6 +109,17 @@ init_hmc5883l()
   return (res == TRUE) ? EXIT_SUCCESS : EXIT_FAILURE;    
 }
 
+void 
+destroy_hmc5883l()
+{
+  daemon_on(DISABLE);
+  
+  close(fd);
+  
+  pthread_mutex_destroy(&xyz_mx);
+  pthread_mutex_destroy(&daemon_exit_mx);
+}
+
 void
 filter_on(enum state_e st)
 {
@@ -162,7 +170,7 @@ measure_daemon(void* arg)
     if ((write (fd, buf, 1)) != 1)
     {
       // Send the register to read from
-      fprintf (stderr, "Error writing to i2c slave\n");
+      fprintf (stderr, "ERROR: Writing to i2c slave\n");
     }
     
     if (read (fd, buf, 6) == 6)
@@ -175,7 +183,7 @@ measure_daemon(void* arg)
     }
     else
     {
-      fprintf (stderr, "Unable to read from HMC5883L\n");
+      fprintf (stderr, "ERROR: Unable to read from HMC5883L\n");
     }    
     
     pthread_mutex_lock(&daemon_exit_mx);
@@ -211,7 +219,6 @@ sensor_detect(int fd)
   printf ("Identification: '%s'\n", buf);
   if (strncmp (buf, ID_STRING, 3) == 0)
     return EXIT_SUCCESS;
-    //printf ("HMC5883L sensor detected\n");
   else    
     return EXIT_FAILURE;
 }
