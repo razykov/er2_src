@@ -14,7 +14,7 @@ extern double get_azimuth_rad();
 extern double 
 inline get_azimuth_grad()
 {
-  return get_azimuth_rad() * 180.0 / M_PI;  
+  return get_azimuth_rad() * 180.0 / M_PI + 180.0;  
 }
 
 #endif /* _HMC5883L_H */

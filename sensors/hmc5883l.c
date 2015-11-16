@@ -73,7 +73,7 @@ static int i2c_addr_valid (int addr);
 
 
 static int fd;
-static int daemon_exit;
+static int daemon_exit = TRUE;
 static short x, y, z;
 static enum state_e filter;
 static pthread_t daemon_thread;
@@ -160,12 +160,17 @@ measure_daemon(void* arg)
 {
   char buf[16];
   
-  write_to_device (fd, MODE, LS_MODE | SM_MODE);
-  usleep (7000); //wait 7 milliseconds
+//   write_to_device (fd, MODE, LS_MODE | SM_MODE);
+//   usleep (7000); //wait 7 milliseconds
   
   while(TRUE) {
     
     buf[0] = DATA;
+    
+    usleep(10000);
+    
+    write_to_device (fd, MODE, LS_MODE | SM_MODE);
+    usleep (7000); //wait 7 milliseconds
     
     if ((write (fd, buf, 1)) != 1)
     {

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 set (PROJECT "Sensors")
-set (TEST_EXEC "test")
+set (TEST_EXEC "_test")
 set (SENSORS_LIB "sensors")
 
 project(${PROJECT})
@@ -20,8 +20,7 @@ add_library (${SENSORS_LIB} SHARED ${SOURCES_HMC5883L})
 target_link_libraries(${SENSORS_LIB} pthread m)
 
 add_executable (${TEST_EXEC} ${SOURCES_TEST})
-target_link_libraries(${TEST_EXEC} ${SENSORS_LIB})
-
+target_link_libraries(${TEST_EXEC} ${SENSORS_LIB} wheels mcontrol)
 
 install(TARGETS ${SENSORS_LIB} DESTINATION ${LIB_INSTALL_PATH})
 install(FILES ${HEADERS_INSTALL} DESTINATION ${HEADERS_INSTALL_PATH})
