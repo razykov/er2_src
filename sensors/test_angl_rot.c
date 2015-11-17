@@ -54,13 +54,5 @@ main() {
   stop();
   usleep(1000000);
   
-  
-    
-  
-//   while(flag) {
-//     printf("azimuth1: %f\n", get_azimuth_grad());
-//     usleep(100000);
-//   }
-  
   return 0;  
 }
