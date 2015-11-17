@@ -15,6 +15,8 @@
 #define TRUE	(1 == 1)
 #define FALSE	(!TRUE)
 
+#define LOG
+
 #define DO_0_75Hz	(0b00000000)
 #define DO_1_5Hz	(0b00000100)
 #define DO_3Hz		(0b00001000)
@@ -59,6 +61,7 @@
 #define HMC5883L_I2C_ADDR 	(0x1E)
 
 #define I2C_FILE	"/dev/i2c-1"
+#define LOG_FILE	"hmc.log"
 #define DEVICE_NAME	"HMC5883L"
 #define WR_BUF_SIZE	(2)
 #define CONFIG_A 	0x00
@@ -168,6 +171,15 @@ measure_daemon(void* arg)
 {
   char buf[16];
   
+#ifdef LOG
+  int count = 0;
+  FILE *log_fd;
+  if((log_fd = fopen(LOG_FILE, "w")) == NULL)
+    fprintf (stderr, "ERROR: Open log file\n");
+  else
+    fprintf(log_fd, "# X Y Z\n");
+#endif /* LOG */
+  
 //   write_to_device (fd, MODE, LS_MODE | SM_MODE);
 //   usleep (7000); //wait 7 milliseconds
   
@@ -194,6 +206,11 @@ measure_daemon(void* arg)
       z = (buf[2] << 8) | buf[3];
       
       calibration(&x, &y, &z);
+      
+#ifdef LOG
+      if(log_fd != NULL)
+	fprintf(log_fd, "%d %d %d %d\n", count++, x, y, z);
+#endif /* LOG */
       pthread_mutex_unlock(&xyz_mx);
     }
     else
@@ -206,6 +223,11 @@ measure_daemon(void* arg)
       break;
     pthread_mutex_unlock(&daemon_exit_mx);
   }
+  
+#ifdef LOG
+  if(log_fd != NULL)
+    fclose(log_fd);
+#endif /* LOG */
   
   write_to_device (fd, MODE, LS_MODE | IDLE_MODE);
   
