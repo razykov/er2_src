@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
+#include <limits.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -126,19 +127,19 @@ main (int argc, char **argv)
   data_timestamp.tv_sec += 1;	//start loggin at start of next second
   data_timestamp.tv_usec = 0;
 
-  short max_x = 0, min_x = 0;
-  short max_y = 0, min_y = 0;
-  short max_z = 0, min_z = 0;
+  short max_x = SHRT_MIN, min_x = SHRT_MAX;
+  short max_y = SHRT_MIN, min_y = SHRT_MAX;
+  short max_z = SHRT_MIN, min_z = SHRT_MAX;
   int count = 0;
   
   fd_hmc = fopen( HMC_ADDR, "w");
   
-  while (1)
+  while (count < 20000)
     {				//record forever   
 
       //read time & wait until next reading required
 
-      while (count < 1000)
+      while (1)
 	{
 	  //get time
 	  gettimeofday (&tv, &tz);
@@ -174,18 +175,18 @@ main (int argc, char **argv)
           short x = (buf[0] << 8) | buf[1];
 	  short y = (buf[4] << 8) | buf[5];
 	  short z = (buf[2] << 8) | buf[3];
-          
-	  max_x = (x > max_x) ? count = 0, x : ++count, max_x;
-	  min_x = (x < min_x) ? count = 0, x : ++count, min_x;
-	  max_y = (y > max_y) ? count = 0, y : ++count, max_y;
-	  min_y = (y < min_y) ? count = 0, y : ++count, min_y;
-	  max_z = (z > max_z) ? count = 0, z : ++count, max_z;
-	  min_z = (z < min_z) ? count = 0, z : ++count, min_z;
+
+	  max_x = (x > max_x && abs(x) != 4096) ? (count = 0, x) : (++count, max_x);
+	  min_x = (x < min_x && abs(x) != 4096) ? (count = 0, x) : (++count, min_x);
+	  max_y = (y > max_y && abs(y) != 4096) ? (count = 0, y) : (++count, max_y);
+	  min_y = (y < min_y && abs(y) != 4096) ? (count = 0, y) : (++count, min_y);
+	  max_z = (z > max_z && abs(z) != 4096) ? (count = 0, z) : (++count, max_z);
+	  min_z = (z < min_z && abs(z) != 4096) ? (count = 0, z) : (++count, min_z);
 	}
 	
-      printf( "%d %d\n%d %d\n%d %d\n", max_x, min_x, max_y, min_y, max_z, min_z);
-      fprintf( fd_hmc, "%d %d\n%d %d\n%d %d\n", max_x, min_x, max_y, min_y, max_z, min_z);
-      
+      printf("%d\n", count);
+      //printf( "%d %d\n%d %d\n%d %d\n", max_x, min_x, max_y, min_y, max_z, min_z);
+	
       //advance data timestamp to next required time
       data_timestamp.tv_usec += resolution;
       if (data_timestamp.tv_usec >= 1e6)
@@ -195,6 +196,9 @@ main (int argc, char **argv)
 	}
 
     }
+    
+    printf( "%d %d\n%d %d\n%d %d\n", max_x, min_x, max_y, min_y, max_z, min_z);
+    fprintf( fd_hmc, "%d %d\n%d %d\n%d %d\n", max_x, min_x, max_y, min_y, max_z, min_z);
 
   return 0;
 }
