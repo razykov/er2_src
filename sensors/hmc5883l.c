@@ -49,6 +49,13 @@
 #define SM_MODE		(0b00000001)
 #define IDLE_MODE	(0b00000011)
 
+#define MAX_C_X	( 698)
+#define MIN_C_X	(-742)
+#define MAX_C_Y	( 675)
+#define MIN_C_Y	(-864)
+#define MAX_C_Z	( 818)
+#define MIN_C_Z	(-734)
+
 #define HMC5883L_I2C_ADDR 	(0x1E)
 
 #define I2C_FILE	"/dev/i2c-1"
@@ -66,6 +73,7 @@
 #define ID_STRING_LEN	(3)
 
 static void *measure_daemon (void *arg);
+static void calibration (short *x, short *y, short *z);
 static int sensor_detect (int fd);
 static int select_device (int fd, int addr, char *name);
 static int write_to_device (int fd, int reg, int val);
@@ -184,6 +192,8 @@ measure_daemon(void* arg)
       x = (buf[0] << 8) | buf[1];
       y = (buf[4] << 8) | buf[5];
       z = (buf[2] << 8) | buf[3];
+      
+      calibration(&x, &y, &z);
       pthread_mutex_unlock(&xyz_mx);
     }
     else
@@ -200,6 +210,14 @@ measure_daemon(void* arg)
   write_to_device (fd, MODE, LS_MODE | IDLE_MODE);
   
   pthread_exit(NULL);
+}
+
+static void 
+calibration(short int* x, short int* y, short int* z)
+{
+  *x -= (MAX_C_X + MIN_C_X) / 2;
+  *y -= (MAX_C_Y + MIN_C_Y) / 2;
+  *z -= (MAX_C_Z + MIN_C_Z) / 2;
 }
 
 static int
