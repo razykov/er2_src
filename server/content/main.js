@@ -5,6 +5,8 @@
 
             setInterval(getStatus, 3000);
             
+            $('#camera-content').attr("src", "http://" + window.location.hostname + ":81/?action=stream");
+            
             $(".speech-block").click(function(e) {
                 sayText($(e.target).text());               
             });
