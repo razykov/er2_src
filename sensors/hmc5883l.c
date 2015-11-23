@@ -51,12 +51,12 @@
 #define SM_MODE		(0b00000001)
 #define IDLE_MODE	(0b00000011)
 
-#define MAX_C_X	( 698)
-#define MIN_C_X	(-742)
-#define MAX_C_Y	( 675)
-#define MIN_C_Y	(-864)
-#define MAX_C_Z	( 818)
-#define MIN_C_Z	(-734)
+#define MAX_C_X	( 364)
+#define MIN_C_X	(-226)
+#define MAX_C_Y	( 178)
+#define MIN_C_Y	(-436)
+#define MAX_C_Z	(-545)
+#define MIN_C_Z	(-612)
 
 #define HMC5883L_I2C_ADDR 	(0x1E)
 
