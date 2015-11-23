@@ -18,7 +18,7 @@
 
 #define I2C_FILE_NAME "/dev/i2c-1"
 
-static int get_i2c_register(int file,
+static int get_i2c_register(int fd,
                             unsigned char addr,
                             unsigned char reg,
                             unsigned char *val) {
@@ -46,7 +46,7 @@ static int get_i2c_register(int file,
     /* Send the request to the kernel and get the result back */
     packets.msgs      = messages;
     packets.nmsgs     = 2;
-    if(ioctl(file, I2C_RDWR, &packets) < 0) {
+    if(ioctl(fd, I2C_RDWR, &packets) < 0) {
         perror("Unable to send data");
         return 1;
     }
@@ -60,6 +60,8 @@ int main(int argc, char **argv) {
     int i2c_file;
     int8_t x, y, z;  // the readings are 8 bits and signed!
 
+    x = y = z = 0;
+    
     // Open a connection to the I2C userspace control file.
     if ((i2c_file = open(I2C_FILE_NAME, O_RDWR)) < 0) {
         perror("Unable to open i2c control file");
