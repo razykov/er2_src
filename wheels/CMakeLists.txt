@@ -30,7 +30,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 endif(CrossC)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g -O2")
 
 set(HEADERS wheels.h er_errors.h)
 set(HEADERS_MCONTROL machine_control.h)
