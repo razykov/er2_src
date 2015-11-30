@@ -15,7 +15,7 @@ class Accel:
         myBus=1
     b = smbus.SMBus(myBus)
     def setUp(self):
-      self.b.write_byte_data(0x1D,0x16,0x55) # Setup the Mode
+      #self.b.write_byte_data(0x1D,0x16,0x55) # Setup the Mode
       self.b.write_byte_data(0x1D,0x10,0) # Calibrate
       self.b.write_byte_data(0x1D,0x11,0) # Calibrate
       self.b.write_byte_data(0x1D,0x12,0) # Calibrate
@@ -24,8 +24,7 @@ class Accel:
       self.b.write_byte_data(0x1D,0x15,0) # Calibrate
       self.b.write_byte_data(0x1D,0x16,0x45)
     def getValueX(self):
-      res = (self.b.read_byte_data(0x1D,0x01) << 8) and self.b.read_byte_data(0x1D,0x00)
-      return res
+      return (self.b.read_byte_data(0x1D,0x01) << 8) and self.b.read_byte_data(0x1D,0x00)
     def getValueY(self):
       return self.b.read_byte_data(0x1D,0x07)
     def getValueZ(self):
