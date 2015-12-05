@@ -1,6 +1,21 @@
+/*
+################################################################################
+#                                                                              #
+#   shutdown             ╔══╗╔══╗ ╔═════╗                                      #
+#    ________            ╚═╗║║╔═╝ ║ ╔═══╝                                      #
+#   |        |           ──║╚╝║── ║ ╚═══╗                                      #
+#   |        |           ──║╔╗║── ╚═══╗ ║                                      #
+#  _|        |_________  ╔═╝║║╚═╗ ╔═══╝ ║                                      #
+#   <-250ms->.<-200ms->. ╚══╝╚══╝ ╚═════╝                                      #
+#                                                                              #
+################################################################################
+*/
+
+
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <stdint.h>
+#include <unistd.h>
 #include "er_signal.h"
 #include "../general/gpio.h"
 #include "../general/er_errors.h"
@@ -58,4 +73,17 @@ init_signal()
   SET_LOW(LED_PIN);
   
   return 0;
+}
+
+void lsig_shutdown()
+{
+  const int light_ittr = 5;
+  
+  int i;
+  for(i = 0; i < light_ittr; ++i) {
+    SET_HIG(LED_PIN);
+    usleep(250000);
+    SET_LOW(LED_PIN);
+    usleep(200000);
+  }
 }

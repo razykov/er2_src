@@ -5,5 +5,7 @@ main()
 {
   init_signal();
   
+  lsig_shutdown();
+  
   return 0;  
 }
