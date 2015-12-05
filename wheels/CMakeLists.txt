@@ -36,8 +36,8 @@ set(HEADERS wheels.h er_errors.h)
 set(HEADERS_MCONTROL machine_control.h)
 set(HEADERS_INSTALL wheels.h machine_control.h)
 
-set(SOURCES test.c)
-set(SOURCES_WHEELS_LIB wheels.c )
+set(SOURCES test.c ../general/gpio.c)
+set(SOURCES_WHEELS_LIB wheels.c ../general/gpio.c)
 set(SOURCES_MCONTROL_LIB machine_control.c)
 
 add_library (${WHEELS_LIB} SHARED ${HEADERS} ${SOURCES_WHEELS_LIB})
