@@ -7,14 +7,10 @@
 #include <stdio.h> //
 #include <unistd.h> //
 #include "wheels.h"
-#include "er_errors.h"
+#include "../general/er_errors.h"
+#include "../general/gpio.h"
 #include "diagnostics.h"
 
-
-#define BCM2708_PERI_BASE       0x20000000
-#define GPIO_BASE               (BCM2708_PERI_BASE + 0x00200000)
-
-#define BLOCK_SIZE              (4*1024)
 
 #define NUMBER_WHEELS                   4
 #define NUMBER_WHEELS_PAIRS             2
@@ -58,7 +54,7 @@
 static enum states {FORTH, BACK, RROT, LROT, STOP} wls_state;
 enum compls {LW = 0, HI = 1};
 
-static volatile uint32_t *gpio;
+extern volatile uint32_t *gpio;
 
 //(Word) offset to the GPIO Set registers for each GPIO pin
 // static uint8_t gpioToGPSET [] =
@@ -172,16 +168,7 @@ static int inline change_state ( enum states s, enum states cs, enum compls t ) 
 
 int init_wheels ( void ) {
 
-    int fd;
-
-    // Open the master /dev/memory device
-    if ( ( fd = open ( "/dev/mem", O_RDWR | O_SYNC | O_CLOEXEC ) ) < 0 )
-        return ERROR_UNABLE_TO_OPEN_MEM;
-
-    gpio = ( uint32_t* ) mmap ( 0, BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, GPIO_BASE );
-    if ( ( int32_t ) gpio == -1 )
-        return ERROR_MMAP_GPIO_FAILED;
-
+    init_gpio();
 
     SET_OUT ( SIG_GPIO_PIN );
     SET_OUT ( CLK_GPIO_PIN );
