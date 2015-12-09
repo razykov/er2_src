@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset='utf-8'>
+    <title> Управление роботом ER </title>
+
+    <link rel="stylesheet" type="text/css" href="index.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+
+<!--    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>-->
+    <script type=text/javascript src="jquery.js"></script>
+    <script type=text/javascript src="main.js"></script>
+</head>
+
+
+<body>
+
+    <div id="top">
+        <div id="page-title">
+            <p style="text-align:left; width:250px; margin: 5px;"><b> Управление роботом ER </b></p>
+        </div>
+        <div id="robot-attr">
+<img id="attr-wireless" class="attribute" src="img/wireless/stat-00.png" style='max-width: 100%' alt="Wireless" />
+            <img id="pow-button" class="attribute imgbutton" src="img/power.svg" style='max-width: 100%' onclick="showPowmenu()" alt="Power" />
+            
+            <div id="powmenu">
+            <ul>
+                <li class="powmenuText"><a onclick="reboot()"><b>Перезагрузка</b></a></li>
+                <li class="powmenuText"><a onclick="poweroff()"><b>Выключение</b></a></li>
+            </ul>
+            </div>
+            
+        </div>
+    </div>
+
+    <div id="workpanel">
+        <div id="control">
+
+<!--            <p class="error"></p>-->
+
+            <div id="cpanel">
+                <div id="camera">
+                    <img id="camera-content" />
+
+                    <div id="inpanel">
+                        <input type=image class="button_rule imgbutton" src="img/go/forth.svg" onclick="command('up')" alt="">
+                        <br>
+                        <input type=image class="button_rule imgbutton" src="img/go/left.svg" onclick="command('left')" alt="">
+                        <input type=image class="button_rule imgbutton" src="img/go/stop.svg" onclick="command('stop')" alt="">
+                        <input type=image class="button_rule imgbutton" src="img/go/right.svg" onclick="command('right')" alt="">
+                        <br>
+                        <input type=image class="button_rule imgbutton" src="img/go/back.svg" onclick="command('down')" alt="">
+                    </div>
+                </div>
+            </div>
+            <textarea id="log">Конец лога</textarea>
+        </div>
+
+        <div id="rpanel">
+            <div style="width: 98%; height: 30px; margin: 3% 1%; border: 1px solid #dddddd; border-radius: 3px;">
+                <input type=image class="imgbutton" style="width: 30px; height: 30px;" src="img/say.svg" onclick="say()" alt="">
+                <input type=text id="speech" value="">
+            </div>
+
+            <div id="speech-cache">
+                <div class="speech-block"><b>Привет!</b></div>
+                <div class="speech-block"><b>Я робот.</b></div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,168 @@
+body {
+    background-color: #ffffff;
+    margin: 0px;
+}
+
+img.attribute {
+    height: 100%;
+}
+
+#top {
+    width: 100%;
+    background: #fcfcfc;
+    background: linear-gradient(#fcfcfc, #ededed);
+    position: fixed;
+    vertical-align: top;
+    z-index: 1;
+    box-shadow: 0 0 5px;
+    font-size: 0.9em;
+}
+
+#page-title {
+    float: left;
+/*    display: inline-block;*/
+}
+
+#robot-attr {
+    height: 25px;
+    vertical-align: top;
+    float: right;
+/*    display: inline-block;*/
+}
+
+#workpanel {
+    height: 100%;
+    width: 100%;
+    z-index: 0;
+    display: inline-block;
+}
+
+#control {
+    width: 70%;
+    height: 100%;
+    vertical-align: top;
+    display: inline-block;
+}
+
+#rpanel {
+    width: 30%;
+    height: 100%;
+    float: right;
+    vertical-align: top;
+    /*    padding: 1%;*/
+    /*    border: 1px solid #aaa;*/
+    box-shadow: 0 5px 5px;
+    display: inline-block;
+}
+
+#cpanel {
+    height: 76%;
+    text-align: center;
+    margin: 1% 0px;
+}
+
+#camera {
+    max-width: 100%;
+    position: relative;
+    display: inline-block;
+}
+
+#camera-content {
+    width: 640px;
+    height: 480px;
+}
+
+#inpanel {
+    z-index: 1;
+    position: absolute;
+    display: inline-block;
+    right: 3%;
+    bottom: 3%;
+}
+
+#log {
+    width: 96%;
+    height: 18%;
+    margin: 1%;
+    margin-top: 0;
+    vertical-align: bottom;
+}
+
+input.button_rule {
+    width: 50px;
+}
+
+input.imgbutton {
+    position: relative;
+}
+
+input.imgbutton:hover {
+    filter: brightness(1.1);
+}
+
+input.imgbutton:active {
+    top: 2px;
+    left: 1px;
+}
+
+p.error {
+    display: none;
+    color: red;
+    font-weight: bold;
+}
+
+#speech {
+    width: calc(100% - 33px);
+    height: 100%;
+    padding: 0px;
+    border: none;
+    float: left;
+    margin-left: 3px;
+}
+
+#speech-cache {
+    width: 98%;
+    vertical-align: top;
+    display: inline-block;
+}
+
+.speech-block {
+    width: calc(100% - 6px);
+    padding: 2px;
+    margin: 1% 1%;
+    background: #f5f5f5;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.speech-block:hover {
+    color: orange;
+}
+
+#powmenu {
+    position: absolute;
+    right: 0px;
+    align-content: center;
+    background: #ededed;
+    background: linear-gradient(#fcfcfc, #ededed);
+    border: 1px solid #888888;
+    border-radius: 6px;
+    box-shadow: 0 2px 2px;
+    display: none;
+}
+
+.powmenuText:hover {
+    color: orange;
+}
+
+li {
+    list-style-type: none;
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+ul {
+    margin: 0;
+    padding: 7px;
+}
