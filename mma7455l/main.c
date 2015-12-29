@@ -4,10 +4,12 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 #include <sys/ioctl.h>
 #include <string.h>
 
 #define TRUE	(1 == 1)
+#define FALSE	(!TRUE)
 
 // The 'raw' 7 bit address shifted up 
 #define MMA7455L_I2C_ADDR	(0x1D)
@@ -25,6 +27,8 @@
 #define _8G_POINTS_PER_G	16
 
 #define I2C_FILE_NAME "/dev/i2c-1"
+
+static int brk_cyc;
 
 void
 selectDevice (int fd, int addr, char *name)
@@ -50,11 +54,20 @@ writeToDevice (int fd, int reg, int val)
     }
 }
 
+void 
+sig_heandl()
+{
+  brk_cyc = TRUE;  
+}
+
 int
 main(int argc, char **argv) {
   
   int fd, i;
   signed char buf[6];
+  
+  brk_cyc = FALSE;
+  signal(SIGINT, sig_heandl);
     
   if ((fd = open ("/dev/i2c-1", O_RDWR)) < 0){
     // Open port for reading and writing
@@ -67,10 +80,15 @@ main(int argc, char **argv) {
   
   writeToDevice (fd, 0x16, 0x45);
   
-  for(i = 0x10; i < 0x16; ++i)
-    writeToDevice(fd, i, 0);
-  //writeToDevice(fd, 0x10, 12);
-  //writeToDevice(fd, 0x12, 29);
+  //for(i = 0x10; i < 0x16; ++i)
+  // 11 30 77
+  writeToDevice(fd, 0x10, 11);
+  writeToDevice(fd, 0x12, 30);
+  writeToDevice(fd, 0x14, 77);
+  
+  int n = 0;
+  FILE *fout = fopen("mma_mov_average", "w");
+  fprintf(fout, "# X Y Z\n");
   
   double ema_x = 0.0, ema_y = 0.0, ema_z = 0.0; 
   double dma_x = 0.0, dma_y = 0.0, dma_z = 0.0;
@@ -112,7 +130,11 @@ main(int argc, char **argv) {
 	tma_y = SMOOTH * dma_y + (1 - SMOOTH) * tma_y;
 	tma_z = SMOOTH * dma_z + (1 - SMOOTH) * tma_z;
 	
-	printf("%f %f %f\n", tma_x, tma_y, tma_z);
+	//printf("%f %f %f\n", tma_x, tma_y, tma_z);
+	fprintf(fout, "%d %.3f %.3f %.3f\n", ++n, tma_x, tma_y, tma_z);
+	
+	if(brk_cyc)
+	  break;
       }
       usleep(10000);
   }
