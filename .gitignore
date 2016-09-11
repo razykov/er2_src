@@ -1,2 +1,3 @@
 wheels/bin
 *.kdev4
+*/build
