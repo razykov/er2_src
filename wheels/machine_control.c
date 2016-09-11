@@ -146,12 +146,12 @@ static int change_wheels_speed () {
             set_back_state();
         }
 
-        right_pair_speed = fabs ( yaw > ZERO_YAW  ? ( 1.0 - yaw ) * speed : speed );
-        left_pair_speed = fabs ( yaw < ZERO_YAW  ? ( 1.0 + yaw ) * speed : speed );
+        right_pair_speed = fabs ( yaw > ZERO_YAW  ? ( YAW_UP_BOUND + YAW_STEP - yaw ) * speed : speed );
+        left_pair_speed = fabs ( yaw < ZERO_YAW  ? ( YAW_UP_BOUND + YAW_STEP + yaw ) * speed : speed );
     }
 
     struct wheels_speed new_speed = { left_pair_speed, right_pair_speed,
-               left_pair_speed, right_pair_speed
+                                      left_pair_speed, right_pair_speed
     };
 
     set_wheels_speed ( &new_speed );

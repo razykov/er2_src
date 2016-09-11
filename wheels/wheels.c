@@ -7,14 +7,10 @@
 #include <stdio.h> //
 #include <unistd.h> //
 #include "wheels.h"
-#include "er_errors.h"
+#include "../general/er_errors.h"
+#include "../general/gpio.h"
 #include "diagnostics.h"
 
-
-#define BCM2708_PERI_BASE       0x20000000
-#define GPIO_BASE               (BCM2708_PERI_BASE + 0x00200000)
-
-#define BLOCK_SIZE              (4*1024)
 
 #define NUMBER_WHEELS                   4
 #define NUMBER_WHEELS_PAIRS             2
@@ -58,7 +54,7 @@
 static enum states {FORTH, BACK, RROT, LROT, STOP} wls_state;
 enum compls {LW = 0, HI = 1};
 
-static volatile uint32_t *gpio;
+extern volatile uint32_t *gpio;
 
 //(Word) offset to the GPIO Set registers for each GPIO pin
 // static uint8_t gpioToGPSET [] =
@@ -172,16 +168,7 @@ static int inline change_state ( enum states s, enum states cs, enum compls t ) 
 
 int init_wheels ( void ) {
 
-    int fd;
-
-    // Open the master /dev/memory device
-    if ( ( fd = open ( "/dev/mem", O_RDWR | O_SYNC | O_CLOEXEC ) ) < 0 )
-        return ERROR_UNABLE_TO_OPEN_MEM;
-
-    gpio = ( uint32_t* ) mmap ( 0, BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, GPIO_BASE );
-    if ( ( int32_t ) gpio == -1 )
-        return ERROR_MMAP_GPIO_FAILED;
-
+    init_gpio();
 
     SET_OUT ( SIG_GPIO_PIN );
     SET_OUT ( CLK_GPIO_PIN );
@@ -272,12 +259,12 @@ int set_wheels_speed ( const struct wheels_speed* const new_val ) {
             int i;
             for ( i = 0; i < sizeof ( change_val ) / sizeof ( float ); ++i )
                 change_val[i] = 0.0;
-
+	    
             response = ERROR_INCORRECT_VALUES;
         }
-
+    
     int i;
-
+    
     // Сalculation maximal change of speed
     float max_change = 0;
     for ( i = 0; i < NUMBER_WHEELS; ++i )
@@ -293,29 +280,24 @@ int set_wheels_speed ( const struct wheels_speed* const new_val ) {
 
     // Smooth speed change
     for ( i = 0; i < nof_steps; ++i ) {
-
-        // Change of current pwm value
-        /*
-        pf_c = ( float* ) &curr_val, j = 0;
-        while ( pf_c != ( float* ) &curr_val + sizeof ( curr_val ) )
-            *pf_c++ += step_val[j++];
-	*/
-	curr_val.lb = step_val[0];
-	curr_val.rb = step_val[1];
-	curr_val.lf = step_val[2];
-	curr_val.rf = step_val[3];
-
-        write_pwm_value ( &curr_val );
-
-        usleep ( TIME_NS_STEP_ACCELERATION );
+      
+      // Change of current pwm value
+      int j = 0;
+      pf_c = ( float* ) &curr_val;
+      while ( pf_c != ( float* ) &curr_val + sizeof ( curr_val ) / sizeof(float) )
+	*pf_c++ += step_val[j++];
+      
+      write_pwm_value ( &curr_val );
+      
+      usleep ( TIME_NS_STEP_ACCELERATION );
     }
 
     // Accurate fixation rate
     pf_c = ( float* ) &curr_val;
     pf_n = ( float* ) new_val;
-    while ( pf_c != ( float* ) &curr_val + sizeof ( curr_val ) )
-        *pf_c++ = *pf_n++;
-
+    while ( pf_c != ( float* ) &curr_val + sizeof ( curr_val ) / sizeof(float) )
+      *pf_c++ = *pf_n++;
+    
     write_pwm_value ( &curr_val );
 
 #ifndef NDEBUG

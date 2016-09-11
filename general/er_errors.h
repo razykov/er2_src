@@ -5,5 +5,6 @@
 #define ERROR_MMAP_GPIO_FAILED      0x02
 #define ERROR_STOPED_ALL_WHEELS     0x03
 #define ERROR_INCORRECT_VALUES      0x04
+#define ERROR_INIT_GPIO_FAILED      0x05
 
 #endif /* ER_ERRORS_H */
