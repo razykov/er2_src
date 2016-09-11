@@ -1,3 +1,5 @@
 wheels/bin
+sensors/build
+
 *.kdev4
 */build
