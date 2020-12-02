@@ -1,0 +1,28 @@
+{
+    "general" : {
+        "project_name" : "machine_test",
+        "project_type" : "app",
+
+        "compiler_name" : "/opt/arm-bcm2708-linux-gnueabi/bin/arm-bcm2708-linux-gnueabi-cc",
+        "linker_name" : "/opt/arm-bcm2708-linux-gnueabi/bin/arm-bcm2708-linux-gnueabi-cc",
+
+        "compiler_options" : [
+            "O0",
+            "g",
+            "Wall",
+            "Wextra",
+            "Werror",
+        ],
+
+        "dependency_list" : [
+            "machine",
+            "rpi_peri",
+            "er_tools",
+            "bixi"
+        ],
+
+        "compiler_std" : "c99",
+
+        "directory_dest" : "er2/tests"
+    }
+}

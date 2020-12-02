@@ -1,2 +1,11 @@
-wheels/bin
-*.kdev4
+# Build
+bin
+build
+
+# Qt Creator
+er2_src.cflags
+er2_src.creator
+er2_src.creator.user
+er2_src.cxxflags
+er2_src.files
+er2_src.includes

@@ -1,0 +1,31 @@
+{
+    "general" : {
+        "project_name" : "er_tools",
+        "project_type" : "shared",
+
+        "compiler_name" : "/opt/arm-bcm2708-linux-gnueabi/bin/arm-bcm2708-linux-gnueabi-cc",
+        "linker_name" : "/opt/arm-bcm2708-linux-gnueabi/bin/arm-bcm2708-linux-gnueabi-cc",
+
+        "compiler_options" : [
+            "O0",
+            "g",
+            "Wall",
+            "Wextra",
+            "Werror",
+        ],
+
+        "dependency_list" : [
+            "bixi",
+            "pthread"
+        ],
+
+        "export_includes" : [
+            "<stdio.h>",
+            "<libbixi.h>"
+        ],
+
+        "compiler_std" : "c99",
+
+        "directory_dest" : "er2/"
+    }
+}

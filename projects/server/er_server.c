@@ -11,8 +11,8 @@
 // #include <sys/wait.h>
 #include <getopt.h>
 #include <microhttpd.h>
-#include "wheels.h"
-#include "machine_control.h"
+#include "er2_wheels.h"
+#include "er2_control.h"
 
 #define TRUE	( 1 == 1 )
 #define FALSE	( !TRUE )

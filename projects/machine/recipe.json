@@ -1,0 +1,30 @@
+{
+    "general" : {
+        "project_name" : "machine",
+        "project_type" : "shared",
+
+        "compiler_name" : "/opt/arm-bcm2708-linux-gnueabi/bin/arm-bcm2708-linux-gnueabi-cc",
+        "linker_name" : "/opt/arm-bcm2708-linux-gnueabi/bin/arm-bcm2708-linux-gnueabi-cc",
+
+        "compiler_options" : [
+            "O0",
+            "g",
+            "Wall",
+            "Wextra",
+            "Werror",
+        ],
+
+        "dependency_list" : [
+            "bixi",
+            "rpi_peri"
+        ],
+
+        "export_includes" : [
+            "<libbixi.h>"
+        ],
+
+        "compiler_std" : "c99",
+
+        "directory_dest" : "er2/"
+    }
+}
