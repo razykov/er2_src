@@ -54,11 +54,6 @@ i32 main(void) {
     _bxi_init_memory();
     bxi_nsleep_set(_my_nsleep);
 
-    if (!rpp_init()) {
-        ert_err("rpp_init failure");
-        return EXIT_FAILURE;
-    }
-
     ert_inf("machine test started");
 
     mch = er2_machine_create();

@@ -66,8 +66,6 @@ static void _blink(void) {
 er2_machine_t er2_machine_create(void) {
     struct er2_machine * machine;
 
-    if (!rpp_init()) return NULL;
-
     machine = bxi_malloc(sizeof(struct er2_machine));
     machine->wheels = er2_whl_create();
 
@@ -80,9 +78,7 @@ er2_machine_t er2_machine_create(void) {
 
 void er2_machine_destroy(er2_machine_t machine) {
     if (!machine) return;
-
     er2_whl_destroy(machine->wheels);
-    rpp_free();
 }
 
 void er2_mch_wheels_state(er2_machine_t machine, er2_wheels_st_t * state) {

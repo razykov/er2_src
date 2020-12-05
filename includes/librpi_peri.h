@@ -4,11 +4,6 @@
 #include <libbixi.h>
 
 
-bool rpp_init(void);
-
-void rpp_free(void);
-
-
 #define GPIOTOGPSET (0x07)
 #define GPIOTOGPCLR (0x0a)
 
